@@ -1,218 +1,177 @@
-import tkinter as tk
+from tkinter import *
 from tkinter import messagebox
 from PIL import Image, ImageTk
 import random
 
-# --- FILE PATHS (update these to match your images) ---
-BG_IMAGE_PATH = "P1.png"
-START_BTN_PATH = "S1.png"
-RULES_BTN_PATH = "R1.png"
-EASY_BTN_PATH = "E1.png"
-MODERATE_BTN_PATH = "I1.png"
-ADVANCED_BTN_PATH = "C1.png"
-BACK_BTN_PATH = "B1.png"
+# main window
+root = Tk()
+root.title("Math Quiz")
+root.geometry("1200x1000")
+root.resizable(False, False)
 
+# load background image
+bg_image = Image.open("P1.png").resize((1200, 1000))
+bg_photo = ImageTk.PhotoImage(bg_image)
 
-# --- SIZES ---
-WIN_W, WIN_H = 1200, 1000
-BTN_W, BTN_H = 300, 100
+# button images
+start_btn_img = ImageTk.PhotoImage(Image.open("S1.png").resize((300, 100)))
+rules_btn_img = ImageTk.PhotoImage(Image.open("R1.png").resize((300, 100)))
+back_btn_img = ImageTk.PhotoImage(Image.open("B1.png").resize((300, 100)))
+easy_btn_img = ImageTk.PhotoImage(Image.open("E1.png").resize((300, 100)))
+medium_btn_img = ImageTk.PhotoImage(Image.open("I1.png").resize((300, 100)))
+hard_btn_img = ImageTk.PhotoImage(Image.open("C1.png").resize((300, 100)))
+playagain_btn_img = ImageTk.PhotoImage(Image.open("B1.png").resize((300, 100)))
 
+# globals
+score = 0
+question_num = 0
+answer = 0
+level = ""
+attempt = 1
+entry = None
 
-class MathsQuizApp:
-    def __init__(self, root):
-        self.root = root
-        root.title("Maths Quiz")
-        root.geometry(f"{WIN_W}x{WIN_H}")
-        root.resizable(False, False)
+# container for all frames
+container = Frame(root)
+container.pack(fill="both", expand=True)
 
-        self.btn_images = {}
-        self.load_images()
+frames = {}
 
-        # Create Canvas for BG
-        self.canvas = tk.Canvas(root, width=WIN_W, height=WIN_H)
-        self.canvas.pack(fill="both", expand=True)
-        self.canvas.create_image(0, 0, image=self.bg_photo, anchor="nw")
+def create_frame(name):
+    frame = Frame(container, width=1200, height=1000)
+    frame.pack_propagate(False)
+    frame.pack(fill="both", expand=True)
+    bg_label = Label(frame, image=bg_photo)
+    bg_label.place(x=0, y=0)
+    frames[name] = frame
+    return frame
 
-        # Frame for content
-        self.content_frame = tk.Frame(self.canvas, bg='white', padx=50, pady=50)
-        self.canvas.create_window(WIN_W // 2, WIN_H // 2, window=self.content_frame, anchor="center")
+def show_frame(name):
+    for f in frames.values():
+        f.pack_forget()
+    frames[name].pack(fill="both", expand=True)
 
-        # Quiz state variables
-        self.score = 0
-        self.question_count = 0
-        self.current_answer = None
-        self.attempt = 1
-        self.level = None
+# === MAIN MENU ===
+main_menu_frame = create_frame("main")
 
-        self.display_main_menu()
+Button(main_menu_frame, image=start_btn_img, borderwidth=0, highlightthickness=0, command=lambda: show_frame("level")).place(x=450, y=500)
+Button(main_menu_frame, image=rules_btn_img, borderwidth=0, highlightthickness=0, command=lambda: show_frame("rules")).place(x=450, y=630)
 
-    def load_images(self):
-        """Load and resize all required images"""
-        try:
-            img = Image.open(BG_IMAGE_PATH).resize((WIN_W, WIN_H), Image.Resampling.LANCZOS)
-            self.bg_photo = ImageTk.PhotoImage(img)
+# === RULES FRAME ===
+rules_frame = create_frame("rules")
+Label(rules_frame, text="Rules", font=("Arial", 40, "bold"), bg="#add8e6").place(x=530, y=200)
+rules_text = """1. There are 10 questions.
+2. 10 points for 1st try.
+3. 5 points for 2nd try.
+4. Easy → 1 digit
+5. Intermediate → 2 digits (may include negatives)
+6. Hard → 3 digits (may include negatives)
+"""
+Label(rules_frame, text=rules_text, font=("Arial", 20), bg="#add8e6", justify="left").place(x=430, y=300)
+Button(rules_frame, image=back_btn_img, borderwidth=0, highlightthickness=0, command=lambda: show_frame("main")).place(x=450, y=700)
 
-            paths = {
-                'start': START_BTN_PATH,
-                'rules': RULES_BTN_PATH,
-                'easy': EASY_BTN_PATH,
-                'moderate': MODERATE_BTN_PATH,
-                'advanced': ADVANCED_BTN_PATH,
-                'back': BACK_BTN_PATH
-            }
+# === LEVEL FRAME ===
+level_frame = create_frame("level")
+Label(level_frame, text="Select Difficulty", font=("Arial", 35, "bold"), bg="#add8e6").place(x=440, y=300)
+Button(level_frame, image=easy_btn_img, borderwidth=0, highlightthickness=0, command=lambda: start_quiz("easy")).place(x=450, y=400)
+Button(level_frame, image=medium_btn_img, borderwidth=0, highlightthickness=0, command=lambda: start_quiz("medium")).place(x=450, y=520)
+Button(level_frame, image=hard_btn_img, borderwidth=0, highlightthickness=0, command=lambda: start_quiz("hard")).place(x=450, y=640)
+Button(level_frame, image=back_btn_img, borderwidth=0, highlightthickness=0, command=lambda: show_frame("main")).place(x=450, y=760)
 
-            for name, path in paths.items():
-                img = Image.open(path).resize((BTN_W, BTN_H), Image.Resampling.LANCZOS)
-                self.btn_images[name] = ImageTk.PhotoImage(img)
+# === QUIZ FRAME ===
+quiz_frame = create_frame("quiz")
+score_label = Label(quiz_frame, text="Score: 0", font=("Arial", 22, "bold"), bg="#add8e6")
+score_label.place(x=950, y=40)
+question_label = Label(quiz_frame, text="", font=("Arial", 22, "bold"), bg="#add8e6")
+question_label.place(x=480, y=200)
+problem_label = Label(quiz_frame, text="", font=("Arial", 50, "bold"), bg="#add8e6")
+problem_label.place(x=450, y=300)
+entry = Entry(quiz_frame, font=("Arial", 30), width=8, justify="center")
+entry.place(x=500, y=400)
+submit_btn = Button(quiz_frame, text="Submit", font=("Arial", 22, "bold"), command=lambda: check_answer())
+submit_btn.place(x=520, y=480)
 
-        except FileNotFoundError as e:
-            messagebox.showerror("Error", f"Image not found: {e}")
-            self.root.destroy()
+# === RESULTS FRAME ===
+results_frame = create_frame("results")
+Label(results_frame, text="Quiz Complete!", font=("Arial", 40, "bold"), bg="#add8e6").place(x=460, y=300)
+score_result_label = Label(results_frame, text="", font=("Arial", 25), bg="#add8e6")
+score_result_label.place(x=500, y=400)
+grade_label = Label(results_frame, text="", font=("Arial", 25, "bold"), bg="#add8e6")
+grade_label.place(x=530, y=460)
+Button(results_frame, image=playagain_btn_img, borderwidth=0, highlightthickness=0, command=lambda: show_frame("main")).place(x=450, y=560)
 
-    def clear_frame(self):
-        for w in self.content_frame.winfo_children():
-            w.destroy()
+def random_numbers():
+    if level == "easy":
+        return random.randint(1, 9), random.randint(1, 9)
+    elif level == "medium":
+        return random.randint(-99, 99), random.randint(-99, 99)
+    else:
+        return random.randint(-999, 999), random.randint(-999, 999)
 
-    def create_img_btn(self, key, command, text=""):
-        return tk.Button(
-            self.content_frame,
-            image=self.btn_images[key],
-            command=command,
-            borderwidth=0,
-            highlightthickness=0,
-            relief="flat",
-            compound="center",
-            text=text,
-            fg="white",
-            font=('Arial', 20, 'bold')
-        )
+def operation():
+    return random.choice(["+", "-"])
 
-    # ------------------ MENUS ------------------
-    def display_main_menu(self):
-        self.clear_frame()
-        tk.Label(self.content_frame, text="MATHS QUIZ", font=('Arial', 40, 'bold'), bg='white').pack(pady=40)
-        self.create_img_btn('start', self.display_level_menu, "Start").pack(pady=20)
-        self.create_img_btn('rules', self.display_rules, "Rules").pack(pady=20)
+def start_quiz(chosen_level):
+    global level, score, question_num
+    level = chosen_level
+    score = 0
+    question_num = 0
+    next_question()
 
-    def display_rules(self):
-        self.clear_frame()
-        tk.Label(self.content_frame, text="RULES", font=('Arial', 35, 'bold'), bg='white').pack(pady=20)
-        rules = (
-            "1. 10 questions per quiz.\n"
-            "2. 10 points for correct 1st attempt.\n"
-            "3. 5 points for correct 2nd attempt.\n"
-            "4. Each level increases number size.\n"
-        )
-        tk.Label(self.content_frame, text=rules, font=('Arial', 16), bg='white', justify="left").pack(pady=20)
-        self.create_img_btn('back', self.display_main_menu, "Back").pack(pady=20)
+def next_question():
+    global num1, num2, op, answer, question_num, attempt
+    question_num += 1
+    attempt = 1
+    if question_num > 10:
+        show_results()
+        return
+    num1, num2 = random_numbers()
+    op = operation()
+    answer = num1 + num2 if op == "+" else num1 - num2
+    question_label.config(text=f"Question {question_num}/10")
+    problem_label.config(text=f"{num1} {op} {num2} =")
+    entry.delete(0, END)
+    score_label.config(text=f"Score: {score}")
+    show_frame("quiz")
 
-    def display_level_menu(self):
-        self.clear_frame()
-        tk.Label(self.content_frame, text="SELECT LEVEL", font=('Arial', 35, 'bold'), bg='white').pack(pady=20)
-
-        tk.Label(self.content_frame, text="Easy: 1-digit numbers (Addition/Subtraction)", font=('Arial', 14), bg='white').pack()
-        self.create_img_btn('easy', lambda: self.start_quiz('easy'), "Easy").pack(pady=10)
-
-        tk.Label(self.content_frame, text="Moderate: 2-digit (Mixed Pos/Neg)", font=('Arial', 14), bg='white').pack()
-        self.create_img_btn('moderate', lambda: self.start_quiz('moderate'), "Moderate").pack(pady=10)
-
-        tk.Label(self.content_frame, text="Advanced: 3-digit (Mixed Pos/Neg)", font=('Arial', 14), bg='white').pack()
-        self.create_img_btn('advanced', lambda: self.start_quiz('advanced'), "Advanced").pack(pady=10)
-
-        self.create_img_btn('back', self.display_main_menu, "Back").pack(pady=20)
-
-    # ------------------ QUIZ ------------------
-    def start_quiz(self, level):
-        self.level = level
-        self.score = 0
-        self.question_count = 0
-        self.next_question()
-
-    def randomInt(self):
-        if self.level == 'easy':
-            return random.randint(1, 9)
-        elif self.level == 'moderate':
-            return random.randint(-99, 99)
+def check_answer():
+    global score, attempt
+    try:
+        user_answer = int(entry.get())
+    except ValueError:
+        messagebox.showwarning("Invalid", "Please enter a number!")
+        return
+    if user_answer == answer:
+        if attempt == 1:
+            score += 10
         else:
-            return random.randint(-999, 999)
-
-    def decideOperation(self):
-        return random.choice(['+', '-'])
-
-    def next_question(self):
-        self.clear_frame()
-        if self.question_count == 10:
-            self.display_results()
-            return
-
-        self.num1 = self.randomInt()
-        self.num2 = self.randomInt()
-        self.operation = self.decideOperation()
-
-        if self.operation == '+':
-            self.current_answer = self.num1 + self.num2
+            score += 5
+        score_label.config(text=f"Score: {score}")
+        messagebox.showinfo("Correct", "Good job!")
+        next_question()
+    else:
+        if attempt == 1:
+            attempt += 1
+            messagebox.showinfo("Try again", "Not quite, try once more!")
         else:
-            self.current_answer = self.num1 - self.num2
+            messagebox.showinfo("Wrong", f"Wrong again! Correct answer was {answer}.")
+            next_question()
 
-        self.question_count += 1
-        self.attempt = 1
+def show_results():
+    score_result_label.config(text=f"Your Score: {score}/100")
+    grade_label.config(text=f"Grade: {get_grade(score)}")
+    show_frame("results")
 
-        tk.Label(self.content_frame, text=f"Question {self.question_count}/10", font=('Arial', 20, 'bold'), bg='white').pack(pady=20)
-        tk.Label(self.content_frame, text=f"{self.num1} {self.operation} {self.num2} =", font=('Arial', 40, 'bold'), bg='white').pack(pady=20)
+def get_grade(score):
+    if score >= 90:
+        return "A+"
+    elif score >= 80:
+        return "A"
+    elif score >= 70:
+        return "B"
+    elif score >= 60:
+        return "C"
+    else:
+        return "Try Again"
 
-        self.answer_entry = tk.Entry(self.content_frame, font=('Arial', 24), justify='center')
-        self.answer_entry.pack(pady=20)
-
-        tk.Button(self.content_frame, text="Submit", font=('Arial', 20, 'bold'),
-                  command=self.check_answer).pack(pady=20)
-
-    def check_answer(self):
-        try:
-            user_ans = int(self.answer_entry.get())
-        except ValueError:
-            messagebox.showwarning("Error", "Please enter a valid number!")
-            return
-
-        if user_ans == self.current_answer:
-            if self.attempt == 1:
-                self.score += 10
-            else:
-                self.score += 5
-            messagebox.showinfo("Correct!", "Good job!")
-            self.next_question()
-        else:
-            if self.attempt == 1:
-                self.attempt += 1
-                messagebox.showwarning("Incorrect", "Try again!")
-            else:
-                messagebox.showerror("Wrong!", f"Wrong again! The correct answer was {self.current_answer}.")
-                self.next_question()
-
-    def display_results(self):
-        self.clear_frame()
-        grade = self.get_grade(self.score)
-
-        tk.Label(self.content_frame, text="QUIZ COMPLETE!", font=('Arial', 35, 'bold'), bg='white').pack(pady=20)
-        tk.Label(self.content_frame, text=f"Your score: {self.score}/100", font=('Arial', 25), bg='white').pack(pady=10)
-        tk.Label(self.content_frame, text=f"Grade: {grade}", font=('Arial', 25, 'bold'), bg='white').pack(pady=10)
-
-        self.create_img_btn('back', self.display_level_menu, "Play Again").pack(pady=30)
-
-    def get_grade(self, score):
-        if score >= 90:
-            return "A+"
-        elif score >= 80:
-            return "A"
-        elif score >= 70:
-            return "B"
-        elif score >= 60:
-            return "C"
-        else:
-            return "Try Again"
-
-
-# ------------------ MAIN ------------------
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = MathsQuizApp(root)
-    root.mainloop()
+show_frame("main")
+root.mainloop()
