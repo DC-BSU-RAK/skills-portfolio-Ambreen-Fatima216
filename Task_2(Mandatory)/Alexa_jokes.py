@@ -1,140 +1,131 @@
 import tkinter as tk
-from tkinter import PhotoImage
 import random
 import os
 
-# --- 1. Pretend Setup: Create a super simple joke file for the program to use ---
+# -----------------------------
+# 1. Load jokes from file
+# -----------------------------
+file_path = "Task_2(Mandatory)/randomJokes.txt"
 
-file_path = "A1 - Resources/randomJokes.txt"
+jokes = []
+with open(file_path, "r") as f:
+    for line in f:
+        parts = line.strip().split("?", 1)
+        if len(parts) == 2:
+            jokes.append((parts[0] + "?", parts[1]))
 
-if not os.path.exists(file_path):
-    os.makedirs(os.path.dirname(file_path), exist_ok=True)
-    with open(file_path, "w") as f:
-        f.write("Why did the chicken cross the road?To get to the other side.\n")
-        f.write("What do you call a fake noodle?An impasta.\n")
-        f.write("What happens if you boil a clown?You get a laughing stock.\n")
+# -----------------------------
+# 2. GUI Setup
+# -----------------------------
+root = tk.Tk()
+root.title("Joke Assistant")
+root.geometry("500x500")
 
+# -----------------------------
+# Background Image Placeholder
+# -----------------------------
+# You can later replace "bg.png" with your image file
+try:
+    bg_img = tk.PhotoImage(file="bg.png")
+    bg_label = tk.Label(root, image=bg_img)
+    bg_label.place(relwidth=1, relheight=1)
+except:
+    root.config(bg="#e8d5ff")  # fallback lavender
 
-# --- 2. The Main Program ---
+# Container Frame (keeps everything centered)
+container = tk.Frame(root, bg="#e8d5ff")
+container.pack(expand=True)
 
-class MySillyJokeApp:
-    def __init__(self, master):
-        self.master = master
-        master.title("My Super Silly Joke App! 🤪")
-        master.geometry("500x500")
+# -----------------------------
+# Labels
+# -----------------------------
+setup_label = tk.Label(
+    container,
+    text="Tap the button to begin!",
+    bg="#e8d5ff",
+    fg="#4b2a7f",
+    font=("Arial", 14, "bold"),
+    wraplength=460
+)
+setup_label.pack(pady=10)
 
-        # ---- SIMPLE PURPLE BACKGROUND ----
-        master.config(bg="#a060ff")   # light purple
+punchline_label = tk.Label(
+    container,
+    text="",
+    bg="#e8d5ff",
+    fg="#6d3fc7",
+    font=("Arial", 12),
+    wraplength=460
+)
+punchline_label.pack(pady=10)
 
-        # --- Smiley Icon ---
-        smiley_data = (
-            'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+g'
-            'yfykAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3ggQCwYgQyI7qAAAADhJ'
-            'REFUOMt1kjFuwzAIRO/g/w9cO8jS+d7S0pIeQAg1QOqIExg2sZ2sUoE3C21d+48G'
-            'gQ/8I5zR1hQAAAAASUVORK5CYII='
-        )
-        self.smiley_icon = PhotoImage(data=smiley_data)
-        master.iconphoto(False, self.smiley_icon)
+current_joke = None
 
-        # --- Load Jokes ---
-        self.jokes = []
-        with open(file_path, 'r', encoding='utf-8') as f:
-            for line in f:
-                parts = line.strip().split('?', 1)
-                if len(parts) == 2:
-                    self.jokes.append((parts[0].strip() + '?', parts[1].strip()))
-
-        self.current_joke = None
-
-        # --- Setup Text Label ---
-        self.setup_label = tk.Label(
-            master,
-            text="Tap the button to get started!",
-            wraplength=450,
-            font=("Comic Sans MS", 14, "bold"),
-            bg="white",
-            fg="black"
-        )
-        self.setup_label.pack(pady=(30, 10), padx=20)
-
-        # --- Punchline Label ---
-        self.punchline_label = tk.Label(
-            master,
-            text="",
-            wraplength=450,
-            font=("Comic Sans MS", 12),
-            bg="white",
-            fg="purple"
-        )
-        self.punchline_label.pack(pady=(5, 20), padx=20)
-
-        # --- Buttons ---
-        button_frame = tk.Frame(master, bg="#a060ff")
-        button_frame.pack(pady=10)
-
-        tk.Button(
-            button_frame,
-            text="Alexa tell me a Joke",
-            command=self.show_joke_setup,
-            font=("Comic Sans MS", 10),
-            bg="lime",
-            activebackground="green"
-        ).pack(side=tk.LEFT, padx=5)
-
-        self.punchline_button = tk.Button(
-            button_frame,
-            text="Show Punchline",
-            command=self.show_punchline,
-            state=tk.DISABLED,
-            font=("Comic Sans MS", 10),
-            bg="yellow",
-            activebackground="gold"
-        )
-        self.punchline_button.pack(side=tk.LEFT, padx=5)
-
-        tk.Button(
-            button_frame,
-            text="Next Joke",
-            command=self.show_joke_setup,
-            font=("Comic Sans MS", 10),
-            bg="cyan",
-            activebackground="blue"
-        ).pack(side=tk.LEFT, padx=5)
-
-        tk.Button(
-            master,
-            text="Quit",
-            command=master.quit,
-            font=("Comic Sans MS", 10),
-            bg="red",
-            fg="white"
-        ).pack(pady=10)
-
-    # --- Button Functions ---
-
-    def show_joke_setup(self):
-        if not self.jokes:
-            self.setup_label.config(text="Uh oh! No jokes loaded! 😢")
-            self.punchline_label.config(text="")
-            self.punchline_button.config(state=tk.DISABLED)
-            return
-
-        self.current_joke = random.choice(self.jokes)
-        setup, _ = self.current_joke
-
-        self.setup_label.config(text=setup)
-        self.punchline_label.config(text="")
-        self.punchline_button.config(state=tk.NORMAL)
-
-    def show_punchline(self):
-        if self.current_joke:
-            _, punchline = self.current_joke
-            self.punchline_label.config(text=punchline)
-            self.punchline_button.config(state=tk.DISABLED)
+# -----------------------------
+# Placeholder: Laugh Sound
+# -----------------------------
+def play_laugh_sound():
+    """
+    Placeholder for sound.
+    Add sound file later (ex: 'laugh.wav') using:
+    
+    import winsound
+    winsound.PlaySound("laugh.wav", winsound.SND_FILENAME)
+    """
+    print("Laugh sound would play here!")  # temporary effect
 
 
-# --- Starting the App ---
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = MySillyJokeApp(root)
-    root.mainloop()
+# -----------------------------
+# Button Functions
+# -----------------------------
+def show_joke():
+    global current_joke
+    current_joke = random.choice(jokes)
+    setup, _ = current_joke
+    setup_label.config(text=setup)
+    punchline_label.config(text="")
+
+def show_punchline():
+    if current_joke:
+        _, punch = current_joke
+        punchline_label.config(text=punch)
+        play_laugh_sound()  # sound plays here
+
+# -----------------------------
+# Helper for Rounded Buttons
+# -----------------------------
+def make_button(text, command, color):
+    return tk.Button(
+        container,
+        text=text,
+        command=command,
+        font=("Arial", 12, "bold"),
+        bg=color,
+        fg="black",
+        relief="flat",
+        width=20,
+        height=1,
+        padx=10,
+        pady=6,
+        bd=5
+    )
+
+# -----------------------------
+# Buttons (Column layout)
+# -----------------------------
+btn1 = make_button("Alexa tell me a Joke", show_joke, "#c9b6ff")
+btn1.pack(pady=5)
+
+btn2 = make_button("Show Punchline", show_punchline, "#ffd86b")
+btn2.pack(pady=5)
+
+btn3 = make_button("Next Joke", show_joke, "#a6e1ff")
+btn3.pack(pady=5)
+
+btn4 = make_button("Quit", root.destroy, "#ff6b6b")
+btn4.pack(pady=15)
+
+# -----------------------------
+# Run App
+# -----------------------------
+root.mainloop()
