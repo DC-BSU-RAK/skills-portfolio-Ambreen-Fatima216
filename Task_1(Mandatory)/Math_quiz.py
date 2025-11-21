@@ -10,19 +10,21 @@ root.geometry("600x500")
 root.resizable(False, False)
 
 # Images
+# Images
 try:
-    bg_image = Image.open("bg.png").resize((600, 500))
+    bg_image = Image.open("Task_1(Mandatory)/bg.png").resize((600, 500))
     bg_photo = ImageTk.PhotoImage(bg_image)
-    start_btn_img = ImageTk.PhotoImage(Image.open("start.png").resize((200, 75)))
-    rules_btn_img = ImageTk.PhotoImage(Image.open("rules.png").resize((200, 75)))
-    back_btn_img = ImageTk.PhotoImage(Image.open("back.png").resize((200, 75)))
-    easy_btn_img = ImageTk.PhotoImage(Image.open("easy.png").resize((200, 75)))
-    medium_btn_img = ImageTk.PhotoImage(Image.open("intermidiate.png").resize((200, 75)))
-    hard_btn_img = ImageTk.PhotoImage(Image.open("challenging.png").resize((200, 75)))
-    playagain_btn_img = ImageTk.PhotoImage(Image.open("playagain.png").resize((200, 75)))
-    easy_bg_img = ImageTk.PhotoImage(Image.open("easy_bg.png").resize((600, 500)))
-    medium_bg_img = ImageTk.PhotoImage(Image.open("medium_bg.png").resize((600, 500)))
-    hard_bg_img = ImageTk.PhotoImage(Image.open("hard_bg.png").resize((600, 500)))
+    start_btn_img = ImageTk.PhotoImage(Image.open("Task_1(Mandatory)/start.png").resize((200, 75)))
+    rules_btn_img = ImageTk.PhotoImage(Image.open("Task_1(Mandatory)/rules.png").resize((200, 75)))
+    back_btn_img = ImageTk.PhotoImage(Image.open("Task_1(Mandatory)/back.png").resize((200, 75)))
+    easy_btn_img = ImageTk.PhotoImage(Image.open("Task_1(Mandatory)/easy.png").resize((200, 75)))
+    medium_btn_img = ImageTk.PhotoImage(Image.open("Task_1(Mandatory)/intermidiate.png").resize((200, 75)))
+    hard_btn_img = ImageTk.PhotoImage(Image.open("Task_1(Mandatory)/challenging.png").resize((200, 75)))
+    playagain_btn_img = ImageTk.PhotoImage(Image.open("Task_1(Mandatory)/playagain.png").resize((200, 75)))
+    easy_bg_img = ImageTk.PhotoImage(Image.open("Task_1(Mandatory)/easy_bg.png").resize((600, 500)))
+    medium_bg_img = ImageTk.PhotoImage(Image.open("Task_1(Mandatory)/medium_bg.png").resize((600, 500)))
+    hard_bg_img = ImageTk.PhotoImage(Image.open("Task_1(Mandatory)/hard_bg.png").resize((600, 500)))
+
 except:
     bg_photo = easy_bg_img = medium_bg_img = hard_bg_img = None
     def create_dummy_img(text):
