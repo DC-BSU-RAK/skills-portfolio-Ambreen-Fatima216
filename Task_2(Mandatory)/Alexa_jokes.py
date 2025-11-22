@@ -4,9 +4,9 @@ from PIL import Image, ImageTk
 import os
 import winsound
 
-
-#Load jokes from file
+# Load jokes from file
 file_path = "Task_2(Mandatory)/randomJokes.txt"
+
 
 jokes = []
 with open(file_path, "r") as f:
@@ -15,24 +15,24 @@ with open(file_path, "r") as f:
         if len(parts) == 2:
             jokes.append((parts[0] + "?", parts[1]))
 
-#GUI Setup
-root = tk.Tk()
-root.title("Joke Assistant")
-root.geometry("500x500")
-root.resizable(False, False)
-root.iconphoto(False, ImageTk.PhotoImage(file="Task_2(Mandatory)/logo.ico"))
+# GUI Setup
+AmbreenJokes = tk.Tk()
+AmbreenJokes.title("😂Alexa Tell Me A Joke😂")
+AmbreenJokes.geometry("500x500")
+AmbreenJokes.resizable(False, False)
+AmbreenJokes.iconphoto(False, ImageTk.PhotoImage(file="Task_2(Mandatory)/logo.ico"))
 
-#Background Image
+# Background Image
 try:
     bg_img = tk.PhotoImage(file="Task_2(Mandatory)/bg2.png")
-    bg_label = tk.Label(root, image=bg_img)
+    bg_label = tk.Label(AmbreenJokes, image=bg_img)
     bg_label.place(relwidth=1, relheight=1)
 except:
-    root.config(bg="#e8d5ff")
+    AmbreenJokes.config(bg="#e8d5ff")
 
-# Labels 
+# Labels
 setup_label = tk.Label(
-    root,
+    AmbreenJokes,
     text="Tap the button to begin!",
     bg="#e8d5ff",
     fg="#4b2a7f",
@@ -42,7 +42,7 @@ setup_label = tk.Label(
 setup_label.place(relx=0.5, y=70, anchor="center")
 
 punchline_label = tk.Label(
-    root,
+    AmbreenJokes,
     text="",
     bg="#e8d5ff",
     fg="#6d3fc7",
@@ -50,6 +50,7 @@ punchline_label = tk.Label(
     wraplength=460
 )
 punchline_label.place(relx=0.5, y=120, anchor="center")
+
 current_joke = None
 
 # Laugh Sound
@@ -73,33 +74,28 @@ def show_punchline():
         punchline_label.config(text=punch)
         play_laugh_sound()
 
-# Button Maker
-def make_button(text, command, color):
-    return tk.Button(
-        root,
-        text=text,
-        command=command,
-        font=("Arial", 12, "bold"),
-        bg=color,
-        fg="black",
-        relief="flat",
-        width=20,
-        height=1
-    )
+# Load Images for Buttons
+img_joke = ImageTk.PhotoImage(file="Task_2(Mandatory)/ALEXA.png")
+img_punchline = ImageTk.PhotoImage(file="Task_2(Mandatory)/SHOW.png")
+img_next = ImageTk.PhotoImage(file="Task_2(Mandatory)/Next.png")
+img_quit = ImageTk.PhotoImage(file="Task_2(Mandatory)/Quit.png")
 
-# Buttons Centered 
-
-btn1 = make_button("Alexa tell me a Joke", show_joke, "#c9b6ff")
+# Buttons (Image Only)
+btn1 = tk.Button(AmbreenJokes, image=img_joke, command=show_joke,
+                 relief="flat", bd=0, highlightthickness=0)
 btn1.place(relx=0.5, y=200, anchor="center")
 
-btn2 = make_button("Show Punchline", show_punchline, "#ffd86b")
-btn2.place(relx=0.5, y=250, anchor="center")
+btn2 = tk.Button(AmbreenJokes, image=img_punchline, command=show_punchline,
+                 relief="flat", bd=0, highlightthickness=0)
+btn2.place(relx=0.5, y=260, anchor="center")
 
-btn3 = make_button("Next Joke", show_joke, "#a6e1ff")
-btn3.place(relx=0.5, y=300, anchor="center")
+btn3 = tk.Button(AmbreenJokes, image=img_next, command=show_joke,
+                 relief="flat", bd=0, highlightthickness=0)
+btn3.place(relx=0.5, y=320, anchor="center")
 
-btn4 = make_button("Quit", root.destroy, "#ff6b6b")
-btn4.place(relx=0.5, y=360, anchor="center")
+btn4 = tk.Button(AmbreenJokes, image=img_quit, command=AmbreenJokes.destroy,
+                 relief="flat", bd=0, highlightthickness=0)
+btn4.place(relx=0.5, y=380, anchor="center")
 
 # Run App
-root.mainloop()
+AmbreenJokes.mainloop()
