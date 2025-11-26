@@ -4,10 +4,8 @@ from PIL import Image, ImageTk
 import os
 import winsound
 
-# Load jokes from file
+# Load jokes from file given in the resourses
 file_path = "Task_2(Mandatory)/randomJokes.txt"
-
-
 jokes = []
 with open(file_path, "r") as f:
     for line in f:
