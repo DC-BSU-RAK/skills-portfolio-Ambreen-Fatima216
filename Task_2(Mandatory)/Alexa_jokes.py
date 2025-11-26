@@ -54,7 +54,7 @@ current_joke = None
 # Laugh Sound
 def play_laugh_sound():
     winsound.PlaySound(
-        "Task_2(Mandatory)/laughtrack.wav",
+        "Task_2(Mandatory)/laughtrack.wav",#laughter track to play on punchline
         winsound.SND_FILENAME | winsound.SND_ASYNC
     )
 
@@ -78,7 +78,7 @@ img_punchline = ImageTk.PhotoImage(file="Task_2(Mandatory)/SHOW.png")
 img_next = ImageTk.PhotoImage(file="Task_2(Mandatory)/Next.png")
 img_quit = ImageTk.PhotoImage(file="Task_2(Mandatory)/Quit.png")
 
-# Buttons (Image Only)
+# Buttons with the images
 btn1 = tk.Button(AmbreenJokes, image=img_joke, command=show_joke,
                  relief="flat", bd=0, highlightthickness=0)
 btn1.place(relx=0.5, y=200, anchor="center")
