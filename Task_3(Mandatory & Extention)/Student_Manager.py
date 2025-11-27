@@ -22,76 +22,75 @@ color_text_secondary = "black"
 
 #base dialog class for reusability
 class BaseDialog(tk.Toplevel):
-    # a reusable base class for custom modal toplevel dialogs
+    # a reusable base for custom toplevel dialogs
     def __init__(self, parent, title):
         super().__init__(parent)
-        self.transient(parent) # window will stay on top of parent
-        self.title(title) # sets the window title
-        self.parent = parent # stores the parent window
-        self.result = None # initializes the result variable
+        self.transient(parent) 
+        self.title(title) 
+        self.parent = parent 
+        self.result = None
         
-        # added: set the dialog icon to match the main app
+        #set the dialog icon to match the main app
         try:
             self.iconbitmap(icon_path) # attempts to set the window icon
         except Exception:
-            pass # ignore if icon fails to load
+            pass
         
         # set colors and style for the dialog
-        self.config(bg=color_dark_blue) # sets the background color
-        self.style = ttk.Style() # creates a style object
+        self.config(bg=color_dark_blue) 
+        self.style = ttk.Style()
         
         # consistent style setup for all dialogs
-        self.style.configure('tframe', background=color_dark_blue) # configures frame style
-        self.style.configure('tlabel', background=color_dark_blue, foreground=color_text_primary, font=('arial', 10, 'bold')) # configures label style
-        self.style.configure('tentry', fieldbackground=color_light_blue, foreground=color_text_secondary, font=('arial', 10)) # configures entry style
+        self.style.configure('tframe', background=color_dark_blue) 
+        self.style.configure('tlabel', background=color_dark_blue, foreground=color_text_primary, font=('arial', 10, 'bold')) 
+        self.style.configure('tentry', fieldbackground=color_light_blue, foreground=color_text_secondary, font=('arial', 10))
         self.style.map('tbutton', 
                        background=[('active', color_heading_bg), ('!disabled', color_light_blue)],
-                       foreground=[('active', color_text_primary), ('!disabled', color_text_secondary)]) # configures button hover/disabled states
-        self.style.configure('tbutton', font=('arial', 10, 'bold')) # configures button font
-        self.style.configure('tradiobutton', background=color_dark_blue, foreground=color_text_primary, font=('arial', 10)) # configures radio button style
+                       foreground=[('active', color_text_primary), ('!disabled', color_text_secondary)]) 
+        self.style.configure('tbutton', font=('arial', 10, 'bold'))
+        self.style.configure('tradiobutton', background=color_dark_blue, foreground=color_text_primary, font=('arial', 10)) 
 
         
         # center the dialog on screen
-        self.update_idletasks() # ensures all widgets are rendered to calculate sizes
-        w = self.winfo_reqwidth() # gets required width
-        h = self.winfo_reqheight() # gets required height
-        parent_w = parent.winfo_width() # gets parent width
-        parent_h = parent.winfo_height() # gets parent height
-        x = parent.winfo_rootx() + (parent_w // 2) - (w // 2) # calculates x position for centering
-        y = parent.winfo_rooty() + (parent_h // 2) - (h // 2) # calculates y position for centering
-        self.geometry(f"+{x}+{y}") # applies the calculated position
-        self.resizable(False, False) # prevents resizing
+        self.update_idletasks() 
+        w = self.winfo_reqwidth() 
+        h = self.winfo_reqheight() 
+        parent_w = parent.winfo_width()
+        parent_h = parent.winfo_height() 
+        x = parent.winfo_rootx() + (parent_w // 2) - (w // 2)
+        y = parent.winfo_rooty() + (parent_h // 2) - (h // 2) 
+        self.geometry(f"+{x}+{y}") 
+        self.resizable(False, False) 
 
     def show(self):
         # displays the dialog and makes it modal
-        self.grab_set() # captures all events until dialog is destroyed
-        self.wait_window(self) # waits for the window to be destroyed
+        self.grab_set() 
+        self.wait_window(self)
 
     def ok(self, event=None):
-        # handles the ok button click event
         if not self.validate():
             # if validation fails, stop
             return
-        self.withdraw() # hides the window
-        self.update_idletasks() # forces update
+        self.withdraw() 
+        self.update_idletasks()
         try:
-            self.apply() # applies the data
+            self.apply() 
         finally:
-            self.cancel() # closes the window
+            self.cancel()
 
     def cancel(self, event=None):
-        # handles the cancel button click event or window closing
-        self.parent.focus_set() # returns focus to the main window
-        self.destroy() # closes the dialog
+        #window closing
+        self.parent.focus_set() 
+        self.destroy() 
 
     def validate(self):
-        return True # default validation always passes
+        return True 
 
     def apply(self):
-        pass # default apply does nothing
+        pass 
 
 
-# --- new: generic message/error/warning dialog (replaces messagebox.show*) ---
+# warning dialog
 class MessageDialog(BaseDialog):
     # custom modal dialog for showing simple messages, warnings, or errors
     def __init__(self, parent, title, message, type='info'):
