@@ -2,12 +2,11 @@ from tkinter import *
 from PIL import Image, ImageTk
 import random
 
-# Global reference for the application icon
+#reference for the application icon
 icon_photo_ref = None
 
 #CUSTOM POP UP DIALOG
 #This functions replace standard tkinter messagebox calls
-
 def create_custom_dialog(title, message, type="info", callback_yes=None):    
     dialog = Toplevel(root)
     dialog.title(title)
