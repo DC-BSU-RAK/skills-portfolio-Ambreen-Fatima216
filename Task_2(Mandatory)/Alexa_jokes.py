@@ -87,12 +87,12 @@ class InstructionDialog(tk.Toplevel):
             highlightthickness=0
         ).pack(pady=(5, 15))
 
-        # Make the dialog modal (blocks interaction with the main window)
+        # Make the dialog modal
         self.grab_set()
         self.focus_set()
         self.wait_window(self)
 
-# --- NEW: Quit Confirmation Dialog Class (Modern Pop-up) ---
+#Quit Confirmation Dialog Class
 class QuitConfirmationDialog(tk.Toplevel):
     def __init__(self, parent, title, bg_image):
         super().__init__(parent)
@@ -121,12 +121,13 @@ class QuitConfirmationDialog(tk.Toplevel):
         x = parent.winfo_rootx() + (parent_w // 2) - (w // 2)
         y = parent.winfo_rooty() + (parent_h // 2) - (h // 2)
         self.geometry(f"{w}x{h}+{x}+{y}")
+        #Doesnt allow to be resized
         self.resizable(False, False)
 
         # Dialog Content
         content_frame = tk.Frame(self, bg="#e8d5ff", bd=2, relief=tk.RIDGE)
         content_frame.pack(padx=20, pady=20, fill='both', expand=True)
-
+        #Confirming if u want to quit app
         tk.Label(
             content_frame,
             text="⚠️ ARE YOU SURE YOU WANT TO QUIT?",
@@ -138,7 +139,7 @@ class QuitConfirmationDialog(tk.Toplevel):
         # Button Box
         btn_frame = tk.Frame(content_frame, bg="#e8d5ff")
         btn_frame.pack(pady=5)
-        
+        #yes button
         tk.Button(
             btn_frame,
             text="Yes, Quit",
@@ -150,7 +151,7 @@ class QuitConfirmationDialog(tk.Toplevel):
             bd=0,
             highlightthickness=0
         ).pack(side=tk.LEFT, padx=10)
-        
+        #No button
         tk.Button(
             btn_frame,
             text="No, Keep Joking",
@@ -163,7 +164,6 @@ class QuitConfirmationDialog(tk.Toplevel):
             highlightthickness=0
         ).pack(side=tk.LEFT, padx=10)
         
-        # Make it modal
         self.grab_set()
         self.focus_set()
         self.wait_window(self)
@@ -172,13 +172,13 @@ class QuitConfirmationDialog(tk.Toplevel):
         self.result = True
         self.destroy()
 
-# --- GUI Setup ---
+#GUI Setup
 AmbreenJokes = tk.Tk()
 AmbreenJokes.title("😂Alexa Tell Me A Joke😂")
 AmbreenJokes.geometry("500x500")
 AmbreenJokes.resizable(False, False)
 
-# Store the PhotoImage object for the icon so the InstructionDialog can use it
+# Store the PhotoImage object for the icon so the Instruction Dialog can use it
 try:
     AmbreenJokes.icon_photo = ImageTk.PhotoImage(file="Task_2(Mandatory)/logo.ico")
     AmbreenJokes.iconphoto(False, AmbreenJokes.icon_photo)
@@ -187,7 +187,7 @@ except Exception:
 
 # Background Image
 try:
-    # Store the PhotoImage object in a way that prevents garbage collection
+    # Store the PhotoImage object 
     bg_img_raw = tk.PhotoImage(file="Task_2(Mandatory)/bg2.png")
     bg_img = bg_img_raw
     bg_label = tk.Label(AmbreenJokes, image=bg_img)
@@ -222,7 +222,6 @@ current_joke = None
 
 # Laugh Sound
 def play_laugh_sound():
-    # Note: winsound only works on Windows
     winsound.PlaySound(
         "Task_2(Mandatory)/laughtrack.wav",#laughter track to play on punchline
         winsound.SND_FILENAME | winsound.SND_ASYNC
@@ -249,7 +248,7 @@ def show_punchline():
         
         play_laugh_sound()
 
-# --- NEW: Quit Confirmation Function ---
+# Quit Confirmation Function
 def confirm_quit():
     if bg_img:
         dialog = QuitConfirmationDialog(AmbreenJokes, "Confirm Exit", bg_img)
@@ -261,7 +260,7 @@ def confirm_quit():
             AmbreenJokes.destroy()
 
 
-# Load Images for Buttons (Ensuring they are referenced to prevent garbage collection)
+# Load Images for Buttons
 img_joke = ImageTk.PhotoImage(file="Task_2(Mandatory)/ALEXA.png")
 img_punchline = ImageTk.PhotoImage(file="Task_2(Mandatory)/SHOW.png")
 img_next = ImageTk.PhotoImage(file="Task_2(Mandatory)/Next.png")
@@ -280,12 +279,12 @@ btn3 = tk.Button(AmbreenJokes, image=img_next, command=show_joke,
                 relief="flat", bd=0, highlightthickness=0)
 btn3.place(relx=0.5, y=320, anchor="center")
 
-# UPDATED: Button 4 command to use the new confirm_quit function
+#Button 4 command to use the new confirm_quit function
 btn4 = tk.Button(AmbreenJokes, image=img_quit, command=confirm_quit,
                 relief="flat", bd=0, highlightthickness=0)
 btn4.place(relx=0.5, y=380, anchor="center")
 
-# --- Call the Instruction Dialog on application load ---
+#Call the Instruction Dialog on application load
 if bg_img:
     InstructionDialog(AmbreenJokes, "App Instructions", bg_img)
 
