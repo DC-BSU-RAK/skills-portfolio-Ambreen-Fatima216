@@ -181,7 +181,7 @@ rules_text = """1. There are 10 questions.
 3. 5 points for 2nd try.
 4. Easy → 1 digit
 5. Intermediate → 2 digits (may include negatives)
-6. Hard → 3 digits (may include negatives)
+6. Challenging → 3 digits (may include negatives)
 """
 Label(rules_frame, text=rules_text, font=("Arial", 16), bg="#217DC3", justify="left").place(x=65, y=150)
 
