@@ -1,8 +1,0 @@
-7
-8439,Jake Hobbs,10,11,10,43
-1234,Alice Smith,18,17,19,95
-5678,Bob Johnson,12,13,11,60
-9012,Charlie Brown,5,8,7,30
-3456,Diana Prince,20,20,20,20
-7777,Eve Adams,15,15,15,75
-Ambreen,Ambreen,18,19,20,99
